@@ -2,7 +2,6 @@
 
 body { display: flex; background: #fdfcfb; color: #d8c9c9; }
 
-/* SIDEBAR LUXE */
 .sidebar {
     width: 240px; min-height: 100vh;
     background: #a66c6c; border-right: 1px solid #b59090;
@@ -16,11 +15,9 @@ body { display: flex; background: #fdfcfb; color: #d8c9c9; }
 }
 .sidebar a:hover { background: #bda6a6; color: white; }
 
-/* MAIN CONTENT */
 .main { flex: 1; padding: 30px; }
 .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
-/* KPI CARDS */
 .kpi-container { display: flex; gap: 25px; margin-bottom: 30px; }
 .kpi {
     background: linear-gradient(135deg, #985e5e, #c09e9e);
@@ -29,7 +26,6 @@ body { display: flex; background: #fdfcfb; color: #d8c9c9; }
 }
 .kpi:nth-child(2) { background: linear-gradient(135deg, #7890b4, #6884a7); }
 
-/* FORMULAIRES */
 input, select, button {
     padding: 12px; margin: 5px 0; border-radius: 10px; border: 1px solid #d09c9c; outline: none;
 }
@@ -39,14 +35,12 @@ button {
 }
 button:hover { opacity: 0.8; transform: translateY(-2px); }
 
-/* TABLEAU */
 table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 20px; }
 th { color: #be9c9c; padding: 15px; text-align: left; border-bottom: 2px solid #c59292; }
 td { background: white; padding: 15px; border-top: 1px solid #e6b3b3; border-bottom: 1px solid #bd9c9c; }
 tr td:first-child { border-radius: 15px 0 0 15px; }
 tr td:last-child { border-radius: 0 15px 15px 0; }
 
-/* DIVERS */
 .section { display: none; }
 .section.active { display: block; }
 .luxury-list { list-style: none; margin-top: 20px; }
@@ -54,3 +48,4 @@ tr td:last-child { border-radius: 0 15px 15px 0; }
     background: white; margin: 5px 0; padding: 15px;
     border-radius: 12px; display: flex; justify-content: space-between;
 }
+
