@@ -2,119 +2,86 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>L'Atelier RH | Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>HR Portal - Luxe Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="projetdevjss.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="brand">
-                <h2>L'Atelier</h2>
-            </div>
-            <nav>
-                <button class="nav-btn active" data-target="dashboard">
-                    <i class="fa-solid fa-house-chimney-window"></i> Aperçu
-                </button>
-                <button class="nav-btn" data-target="employees">
-                    <i class="fa-solid fa-person-dress"></i> Collaborateurs
-                </button>
-                <button class="nav-btn" data-target="api-section">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Inspirations
-                </button>
-            </nav>
-        </aside>
 
-        <main class="main-content">
-            <header class="top-bar">
-                <h1 id="page-title">Tableau de Bord</h1>
-                <div class="user-profile">
-                    <span id="date-display"></span>
-                    <div class="avatar"></div>
-                </div>
-                <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal-content card">
-        <h3>Nouveau Talent</h3>
-        <form id="hr-form">
-            <div class="input-group">
-                <label>Nom Complet</label>
-                <input type="text" id="emp-name" required placeholder="Ex: Clara Morel">
+<div class="sidebar">
+    <h2>HR Portal</h2>
+    <a onclick="showSection('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+    <a onclick="showSection('employees')"><i class="fa-solid fa-users"></i> Employés</a>
+    <a onclick="showSection('departments')"><i class="fa-solid fa-building"></i> Départements</a>
+</div>
+
+<div class="main">
+    <div class="navbar">
+        <h3 id="page-title">Dashboard</h3>
+        <button class="btn-api" onclick="importFromAPI()">Importer API</button>
+    </div>
+
+    <div id="dashboard" class="section active">
+        <div class="kpi-container">
+            <div class="kpi">
+                <p>Total Employés</p>
+                <h2 id="kpiEmployees">0</h2>
             </div>
-            <div class="input-group">
-                <label>Poste</label>
-                <input type="text" id="emp-role" required placeholder="Ex: Designer Senior">
+            <div class="kpi">
+                <p>Salaire Moyen</p>
+                <h2 id="kpiSalary">0 €</h2>
             </div>
-            <div class="input-group">
-                <label>Département</label>
-                <select id="emp-dep">
-                    <option value="Création">Création</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Direction">Direction</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Salaire Mensuel (€)</label>
-                <input type="number" id="emp-salary" required min="1000">
-            </div>
-            <div class="modal-actions">
-                <button type="button" id="btn-close" class="btn-secondary">Annuler</button>
-                <button type="submit" class="btn-chic">Enregistrer</button>
-            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="chartEmployees"></canvas>
+        </div>
+    </div>
+
+    <div id="employees" class="section">
+        <h3>Gestion des collaborateurs</h3>
+        <form id="employeeForm">
+            <input type="hidden" id="editIndex" value="-1">
+            <input type="text" id="nom" placeholder="Nom" required>
+            <input type="text" id="prenom" placeholder="Prénom" required>
+            <input type="number" id="salaire" placeholder="Salaire (€)" required>
+            <select id="empDept" required>
+                <option value="">Choisir un département</option>
+            </select>
+            <button type="submit" id="submitBtn">Ajouter au registre</button>
         </form>
+
+        <div class="table-controls">
+            <input type="text" id="search" placeholder="Rechercher un nom..." onkeyup="searchEmployee()">
+            <button onclick="sortEmployees('nom')">Trier par Nom</button>
+            <button onclick="sortEmployees('salaire')">Trier par Salaire</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Département</th>
+                    <th>Salaire</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="employeeList"></tbody>
+        </table>
+    </div>
+
+    <div id="departments" class="section">
+        <h3>Organisation des pôles</h3>
+        <div class="dept-form">
+            <input type="text" id="deptName" placeholder="Nouveau département">
+            <button onclick="addDepartment()">Créer le pôle</button>
+        </div>
+        <ul id="departmentList" class="luxury-list"></ul>
     </div>
 </div>
-            </header>
 
-            <section id="dashboard" class="page-section">
-                <div class="kpi-grid">
-                    <div class="card kpi-card">
-                        <span class="label">Effectif Total</span>
-                        <h3 id="total-emp">0</h3>
-                    </div>
-                    <div class="card kpi-card gold-border">
-                        <span class="label">Budget Mensuel</span>
-                        <h3 id="total-budget">0 €</h3>
-                    </div>
-                </div>
-                <div class="card chart-container">
-                    <h3>Répartition des Talents</h3>
-                    <canvas id="hrChart"></canvas>
-                </div>
-            </section>
-
-            <section id="employees" class="page-section hidden">
-                <div class="section-header">
-                    <h2>Gestion des Talents</h2>
-                    <button id="btn-add" class="btn-chic"><i class="fa-solid fa-plus"></i> Nouveau Talent</button>
-                </div>
-                
-                <div class="filters">
-                    <input type="text" id="search" placeholder="Rechercher un nom...">
-                    <select id="sort">
-                        <option value="name">Trier par Nom</option>
-                        <option value="salary">Trier par Salaire</option>
-                    </select>
-                </div>
-
-                <div class="table-wrapper">
-                    <table class="chic-table">
-                        <thead>
-                            <tr>
-                                <th>Profil</th>
-                                <th>Poste</th>
-                                <th>Département</th>
-                                <th>Salaire</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="emp-body"></tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-    </div>
-   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="projetdevjsss.js"></script>
+<script src="projetdevjsss.js"></script>
 </body>
 </html>
