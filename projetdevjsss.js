@@ -1,134 +1,162 @@
-class HRManager {
-    constructor() {
-        this.employees = JSON.parse(localStorage.getItem('talents')) || [];
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.init());
-        } else {
-            this.init();
-        }
-    }
 
-    init() {
-        console.log("L'Atelier RH : Initialisation...");
-        this.setupNavigation();
-        this.setupEventListeners();
-        this.render();
-        
-        const dateEl = document.getElementById('date-display');
-        if(dateEl) {
-            dateEl.innerText = new Date().toLocaleDateString('fr-FR', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            });
-        }
-    }
+let employees = JSON.parse(localStorage.getItem("employees")) || [];
+let departments = JSON.parse(localStorage.getItem("departments")) || ["RH", "Marketing", "Design"];
 
-    setupNavigation() {
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const sections = document.querySelectorAll('.page-section');
+function showSection(id) {
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    document.getElementById("page-title").innerText = id.charAt(0).toUpperCase() + id.slice(1);
+}
 
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = btn.dataset.target;
-                sections.forEach(s => s.classList.add('hidden'));
-                const targetSection = document.getElementById(target);
-                if(targetSection) targetSection.classList.remove('hidden');
+function displayDepartments() {
+    const list = document.getElementById("departmentList");
+    const select = document.getElementById("empDept");
+    list.innerHTML = "";
+    select.innerHTML = '<option value="">Choisir un département</option>';
 
-                navButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const titleEl = document.getElementById('page-title');
-                if(titleEl) titleEl.textContent = btn.innerText.trim();
-            });
-        });
-    }
+    departments.forEach((dept, index) => {
+        list.innerHTML += `<li>${dept} <button onclick="deleteDept(${index})" style="background:#e74c3c; padding:5px 10px;">Supprimer</button></li>`;
+        select.innerHTML += `<option value="${dept}">${dept}</option>`;
+    });
+    localStorage.setItem("departments", JSON.stringify(departments));
+}
 
-    setupEventListeners() {
-        const modal = document.getElementById('modal-overlay');
-        const btnAdd = document.getElementById('btn-add');
-        const btnClose = document.getElementById('btn-close');
-        const form = document.getElementById('hr-form');
-
-        
-        if (btnAdd && modal) {
-            btnAdd.addEventListener('click', () => modal.classList.remove('hidden'));
-        }
-        if (btnClose && modal) {
-            btnClose.addEventListener('click', () => modal.classList.add('hidden'));
-        }
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.addEmployee();
-                if(modal) modal.classList.add('hidden');
-                form.reset();
-            });
-        }
-    }
-
-    addEmployee() {
-        const nameVal = document.getElementById('emp-name').value;
-        const roleVal = document.getElementById('emp-role').value;
-        const depVal = document.getElementById('emp-dep').value;
-        const salaryVal = document.getElementById('emp-salary').value;
-
-        const newEmployee = {
-            id: Date.now().toString(),
-            name: nameVal,
-            role: roleVal,
-            dep: depVal,
-            salary: salaryVal
-        };
-
-        this.employees.push(newEmployee);
-        this.save();
-        this.render();
-    }
-
-    delete(id) {
-        if(confirm("Retirer ce talent de l'Atelier ?")) {
-            this.employees = this.employees.filter(emp => emp.id !== id);
-            this.save();
-            this.render();
-        }
-    }
-
-    save() {
-        localStorage.setItem('talents', JSON.stringify(this.employees));
-    }
-
-    render() {
-        const tbody = document.getElementById('emp-body');
-        if (!tbody) return;
-
-        tbody.innerHTML = this.employees.map(emp => `
-            <tr>
-                <td><strong>${emp.name}</strong></td>
-                <td>${emp.role}</td>
-                <td><span class="badge-dep">${emp.dep}</span></td>
-                <td>${Number(emp.salary).toLocaleString()} €</td>
-                <td>
-                    <button class="btn-table delete" onclick="hr.delete('${emp.id}')">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-
-        this.updateKPIs();
-    }
-
-    updateKPIs() {
-        const totalEmp = document.getElementById('total-emp');
-        const totalBudget = document.getElementById('total-budget');
-
-        if (totalEmp) totalEmp.innerText = this.employees.length;
-        if (totalBudget) {
-            const sum = this.employees.reduce((acc, emp) => acc + Number(emp.salary), 0);
-            totalBudget.innerText = sum.toLocaleString() + ' €';
-        }
+function addDepartment() {
+    const name = document.getElementById("deptName").value;
+    if (name) {
+        departments.push(name);
+        document.getElementById("deptName").value = "";
+        displayDepartments();
     }
 }
 
+function deleteDept(index) {
+    if(confirm("Supprimer ce pôle ?")) {
+        departments.splice(index, 1);
+        displayDepartments();
+    }
+}
 
-const hr = new HRManager();
+document.getElementById("employeeForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const index = document.getElementById("editIndex").value;
+    
+    const emp = {
+        nom: document.getElementById("nom").value,
+        prenom: document.getElementById("prenom").value,
+        salaire: document.getElementById("salaire").value,
+        dept: document.getElementById("empDept").value
+    };
+
+    if (index === "-1") {
+        employees.push(emp);
+    } else {
+        employees[index] = emp;
+        document.getElementById("editIndex").value = "-1";
+        document.getElementById("submitBtn").innerText = "Ajouter au registre";
+    }
+
+    localStorage.setItem("employees", JSON.stringify(employees));
+    this.reset();
+    displayEmployees();
+    updateDashboard();
+});
+
+function displayEmployees() {
+    const list = document.getElementById("employeeList");
+    list.innerHTML = "";
+
+    employees.forEach((emp, i) => {
+        list.innerHTML += `
+            <tr>
+                <td><b>${emp.nom.toUpperCase()}</b></td>
+                <td>${emp.prenom}</td>
+                <td><span style="color:#d4a5a5">#${emp.dept}</span></td>
+                <td>${emp.salaire} €</td>
+                <td>
+                    <button onclick="editEmployee(${i})" style="background:#3498db">Editer</button>
+                    <button onclick="deleteEmployee(${i})" style="background:#e74c3c">X</button>
+                </td>
+            </tr>`;
+    });
+}
+
+function editEmployee(index) {
+    const emp = employees[index];
+    document.getElementById("nom").value = emp.nom;
+    document.getElementById("prenom").value = emp.prenom;
+    document.getElementById("salaire").value = emp.salaire;
+    document.getElementById("empDept").value = emp.dept;
+    document.getElementById("editIndex").value = index;
+    document.getElementById("submitBtn").innerText = "Enregistrer les modifications";
+}
+
+function deleteEmployee(index) {
+    if (confirm("Supprimer cette fiche collaborateur ?")) {
+        employees.splice(index, 1);
+        localStorage.setItem("employees", JSON.stringify(employees));
+        displayEmployees();
+        updateDashboard();
+    }
+}
+
+function sortEmployees(criteria) {
+    if (criteria === 'nom') {
+        employees.sort((a, b) => a.nom.localeCompare(b.nom));
+    } else {
+        employees.sort((a, b) => b.salaire - a.salaire);
+    }
+    displayEmployees();
+}
+
+function searchEmployee() {
+    let filter = document.getElementById("search").value.toLowerCase();
+    let rows = document.querySelectorAll("#employeeList tr");
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+    });
+}
+let chart;
+function updateDashboard() {
+    document.getElementById("kpiEmployees").innerText = employees.length;
+    let total = employees.reduce((sum, emp) => sum + Number(emp.salaire), 0);
+    let avg = employees.length > 0 ? (total / employees.length).toFixed(0) : 0;
+    document.getElementById("kpiSalary").innerText = avg + " €";
+    createChart(avg);
+}
+
+function createChart(avg) {
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById("chartEmployees"), {
+        type: "bar",
+        data: {
+            labels: ["Effectif", "Salaire Moyen"],
+            datasets: [{
+                label: 'Statistiques RH',
+                data: [employees.length, avg],
+                backgroundColor: ["#f5d5d5", "#d4e1f5"]
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+function importFromAPI() {
+    fetch("https://randomuser.me/api/?results=3")
+        .then(res => res.json())
+        .then(data => {
+            data.results.forEach(user => {
+                employees.push({
+                    nom: user.name.last,
+                    prenom: user.name.first,
+                    salaire: 2500,
+                    dept: "RH"
+                });
+            });
+            localStorage.setItem("employees", JSON.stringify(employees));
+            displayEmployees();
+            updateDashboard();
+        }).catch(err => console.error("Erreur API:", err));
+}
+displayDepartments();
+displayEmployees();
+updateDashboard();
