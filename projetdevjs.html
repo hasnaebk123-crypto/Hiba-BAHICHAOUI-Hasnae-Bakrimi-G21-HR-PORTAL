@@ -1,8 +1,8 @@
-java.html :        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>HR Portal - Luxe Edition</title>
+    <title>HR Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="java.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,17 +12,24 @@ java.html :        <!DOCTYPE html>
 
 <div class="sidebar">
     <h2>HR Portal</h2>
-    <a onclick="showSection('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-    <a onclick="showSection('employees')"><i class="fa-solid fa-users"></i> Employés</a>
-    <a onclick="showSection('departments')"><i class="fa-solid fa-building"></i> Départements</a>
+    <a onclick="showSection('dashboard')" class="nav-dashboard">
+        <i class="fa-solid fa-chart-line"></i> Dashboard
+    </a>
+    <a onclick="showSection('employees')" class="nav-employees">
+        <i class="fa-solid fa-users"></i> Employés
+    </a>
+    <a onclick="showSection('departments')" class="nav-departments">
+        <i class="fa-solid fa-building"></i> Départements
+    </a>
 </div>
 
 <div class="main">
     <div class="navbar">
         <h3 id="page-title">Dashboard</h3>
-        <button class="btn-api" onclick="importFromAPI()">Importer API</button>
+        <button class="btn-api" type="button" onclick="importFromAPI()">Importer API</button>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="dashboard" class="section active">
         <div class="kpi-container">
             <div class="kpi">
@@ -31,7 +38,7 @@ java.html :        <!DOCTYPE html>
             </div>
             <div class="kpi">
                 <p>Salaire Moyen</p>
-                <h2 id="kpiSalary">0 €</h2>
+                <h2 id="kpiSalary">0 MAD</h2>
             </div>
         </div>
         <div class="chart-container">
@@ -39,24 +46,31 @@ java.html :        <!DOCTYPE html>
         </div>
     </div>
 
+    <!-- EMPLOYES -->
     <div id="employees" class="section">
         <h3>Gestion des collaborateurs</h3>
+
         <form id="employeeForm">
             <input type="hidden" id="editIndex" value="-1">
             <input type="text" id="nom" placeholder="Nom" required>
             <input type="text" id="prenom" placeholder="Prénom" required>
-            <input type="number" id="salaire" placeholder="Salaire (€)" required>
-            <select id="empDept" required>
-                <option value="">Choisir un département</option>
-            </select>
-            <button type="submit" id="submitBtn">Ajouter au registre</button>
+            <input type="number" id="salaire" placeholder="Salaire (MAD)" required>
+            <select id="empDept" required></select>
+            <button type="submit" id="submitBtn">Ajouter</button>
         </form>
 
         <div class="table-controls">
-            <input type="text" id="search" placeholder="Rechercher un nom..." onkeyup="searchEmployee()">
-            <button onclick="sortEmployees('nom')">Trier par Nom</button>
-            <button onclick="sortEmployees('salaire')">Trier par Salaire</button>
+            <div class="search-group">
+                <input type="text" id="searchInput" placeholder="Entrer un nom">
+                <button type="button" onclick="searchEmployee()">Rechercher</button>
+            </div>
+        
+            <div class="sort-buttons">
+                <button type="button" onclick="sortByName()">Trier par Nom (A → Z)</button>
+                <button type="button" onclick="sortBySalary()">Trier par Salaire</button>
+            </div>
         </div>
+        
 
         <table>
             <thead>
@@ -72,12 +86,11 @@ java.html :        <!DOCTYPE html>
         </table>
     </div>
 
+    <!-- DEPARTEMENTS -->
     <div id="departments" class="section">
         <h3>Organisation des pôles</h3>
-        <div class="dept-form">
-            <input type="text" id="deptName" placeholder="Nouveau département">
-            <button onclick="addDepartment()">Créer le pôle</button>
-        </div>
+        <input type="text" id="deptName" placeholder="Nouveau département">
+        <button type="button" onclick="addDepartment()">Ajouter</button>
         <ul id="departmentList" class="luxury-list"></ul>
     </div>
 </div>
