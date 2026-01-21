@@ -1,3 +1,4 @@
+//java.css:   
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
 
 body { display: flex; background: #fdfcfb; color: #d8c9c9; }
@@ -47,4 +48,59 @@ tr td:last-child { border-radius: 0 15px 15px 0; }
 .luxury-list li {
     background: white; margin: 5px 0; padding: 15px;
     border-radius: 12px; display: flex; justify-content: space-between;
+}
+.nav-dashboard { color: #6f8fbf; font-weight: bold; }
+.nav-employees { color: #b77b7b; font-weight: bold; }
+.nav-departments { color: #7aa88a; font-weight: bold; }
+
+.table-controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 15px;
+}
+.sidebar {
+    background: linear-gradient(180deg, #9c5f5f, #b78484);
+}
+
+.sidebar h2 {
+    color: #fff;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.sidebar a {
+    color: #f7eeee;              /* PLUS CLAIR */
+    font-weight: 500;
+    letter-spacing: 0.4px;
+}
+.nav-dashboard {
+    color: #e6f0ff !important;   /* bleu clair luxe */
+}
+
+.nav-employees {
+    color: #fff1e6 !important;   /* ivoire chaud */
+}
+
+.nav-departments {
+    color: #e8fff1 !important;   /* vert pastel */
+}
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.sidebar a.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    box-shadow: inset 4px 0 0 #ffffff;
+}
+.sidebar a i {
+    margin-right: 10px;
+    opacity: 0.9;
 }
